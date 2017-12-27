@@ -43,11 +43,17 @@
     </div>
   </form>
 
-<ul v-for="item in items">
-  <li>{{ item }}</li>
-</ul>
+<div id="list">
+  <h1 v-if="sorted_produce.length > 0">Produce</h1>
+    <ul v-for="item in sorted_produce">
+      <li>{{ item.name }} <span v-if="item.quantity > 1"> - {{ item.quantity }}</span>
+        <span v-on:click="deleteItem(item)"><i class="fas fa-minus-circle"></i></span>
+      </li>
+    </ul>
+</div>
 
-  </div>
+
+</div>
 </template>
 
 <script>
@@ -109,13 +115,20 @@ export default {
       this.item.name = ''
       this.item.category = 'Produce'
       this.item.quantity = 1
+    },
+    deleteItem: function (item) {
+      itemsRef.child(item['.key']).remove()
     }
   },
   computed: {
-    // sorted_produce () {
-    //   const result = this.groceryList.filter(ct => ct.cat === 'Produce')
-    //   return result.sort((a, b) => a.name > b.name)
-    // }
+    sorted_produce () {
+      const result = this.items.filter(item => item.category === 'Produce')
+      return result.sort((a, b) => a.name > b.name)
+    },
+    sorted_deli () {
+      const result = this.items.filter(item => item.category === 'Deli')
+      return result.sort((a, b) => a.name > b.name)
+    }
   }
 }
 </script>
@@ -162,4 +175,9 @@ a {
   width: 40px;
   height: 40px;
 }
+
+.fa-minus-circle {
+  cursor: pointer;
+}
+
 </style>
