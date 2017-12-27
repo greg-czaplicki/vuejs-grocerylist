@@ -12,7 +12,7 @@
       <label class="label">Category:</label>
       <div class="control">
         <div class="select">
-          <select>
+          <select v-model="itemCategory">
             <option v-for="category in categories">{{ category }}</option>
           </select>
         </div>
@@ -37,6 +37,10 @@
       <button v-if="itemName" class="button is-link">Submit</button>
     </div>
   </div>
+
+  <h1 v-if="sorted_produce.length > 0">Produce</h1>
+  <p v-for="x in sorted_produce">{{ x.name }}</p>
+
   </div>
 </template>
 
@@ -63,7 +67,8 @@ export default {
       ],
       quantity: 1,
       itemName: '',
-      itemCategory: []
+      itemCategory: 'Produce',
+      groceryList: [{ name: 'Parsley', cat: 'Produce', quant: 2 }, { name: 'Apple', cat: 'Produce', quant: 1 }]
     }
   },
   methods: {
@@ -72,6 +77,12 @@ export default {
     },
     decreaseQuantity: function () {
       this.quantity -= 1
+    }
+  },
+  computed: {
+    sorted_produce () {
+      const result = this.groceryList.filter(ct => ct.cat === 'Produce')
+      return result.sort((a, b) => a.name > b.name)
     }
   }
 }
