@@ -1,51 +1,76 @@
 <template>
   <div id="app">
-    <h1>Grocery List</h1>
+    <h1 id="title">Grocery List</h1>
 
-    <div class="field">
-      <label class="label">Item Name:</label>
-      <div class="control">
-        <input v-model="itemName" class="input" type="text" placeholder="Parsley">
-      </div>
-    </div>
-    <div class="field">
-      <label class="label">Category:</label>
-      <div class="control">
-        <div class="select">
-          <select v-model="itemCategory">
-            <option v-for="category in categories">{{ category }}</option>
-          </select>
+    <form v-on:submit.prevent="addItem">
+      <div class="field">
+        <label class="label">Item Name:</label>
+        <div class="control">
+          <input v-model="item.name" class="input" type="text" placeholder="Parsley">
         </div>
       </div>
-    </div>
-    <div class="field">
-      <label class="label">Quantity</label>
-      <div class="field is-grouped">
+
+      <div class="field">
+        <label class="label">Category:</label>
         <div class="control">
-          <h2>{{ quantity }}</h2>
+          <div class="select">
+            <select v-model="item.category">
+              <option v-for="category in categories">{{ category }}</option>
+            </select>
+          </div>
         </div>
-        <div class="control">
-          <button v-on:click="increaseQuantity" class="button is-primary">+</button>
+      </div>
+
+      <div class="field">
+        <label class="label">Quantity</label>
+        <div class="field is-grouped">
+          <div class="control">
+            <h2>{{ item.quantity }}</h2>
           </div>
-        <div class="control">
-          <button v-on:click="decreaseQuantity" v-if="quantity > 1" class="button is-danger">-</button>
+          <div class="control">
+            <button v-on:click.prevent="increaseQuantity" class="button is-primary quantity">+</button>
+            </div>
+          <div class="control">
+            <button v-on:click.prevent="decreaseQuantity" v-if="item.quantity > 1" class="button is-danger quantity">-</button>
           </div>
+        </div>
+      </div>
+
+      <div class="field">
+      <div class="control">
+        <input type="submit" value="Add Item" class="button is-link">
       </div>
     </div>
-    <div class="field is-grouped">
-    <div class="control">
-      <button v-if="itemName" class="button is-link">Submit</button>
-    </div>
-  </div>
+  </form>
 
-  <h1 v-if="sorted_produce.length > 0">Produce</h1>
-  <p v-for="x in sorted_produce">{{ x.name }}</p>
+<ul v-for="item in items">
+  <li>{{ item }}</li>
+</ul>
 
   </div>
 </template>
 
 <script>
+import Firebase from 'firebase'
+
+const config = {
+  apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
+  authDomain: 'vuejsgrocery.firebaseapp.com',
+  databaseURL: 'https://vuejsgrocery.firebaseio.com',
+  projectId: 'vuejsgrocery',
+  storageBucket: 'vuejsgrocery.appspot.com',
+  messagingSenderId: '986128402964'
+}
+
+const app = Firebase.initializeApp(config)
+const db = app.database()
+
+const itemsRef = db.ref('items')
+
 export default {
+  firebase: {
+    items: itemsRef
+  },
   data () {
     return {
       categories: [
@@ -65,25 +90,32 @@ export default {
         'Frozen Foods',
         'Miscellaneous'
       ],
-      quantity: 1,
-      itemName: '',
-      itemCategory: 'Produce',
-      groceryList: [{ name: 'Parsley', cat: 'Produce', quant: 2 }, { name: 'Apple', cat: 'Produce', quant: 1 }]
+      item: {
+        quantity: 1,
+        name: '',
+        category: 'Produce'
+      }
     }
   },
   methods: {
     increaseQuantity: function () {
-      this.quantity += 1
+      this.item.quantity += 1
     },
     decreaseQuantity: function () {
-      this.quantity -= 1
+      this.item.quantity -= 1
+    },
+    addItem: function () {
+      itemsRef.push(this.item)
+      this.item.name = ''
+      this.item.category = 'Produce'
+      this.item.quantity = 1
     }
   },
   computed: {
-    sorted_produce () {
-      const result = this.groceryList.filter(ct => ct.cat === 'Produce')
-      return result.sort((a, b) => a.name > b.name)
-    }
+    // sorted_produce () {
+    //   const result = this.groceryList.filter(ct => ct.cat === 'Produce')
+    //   return result.sort((a, b) => a.name > b.name)
+    // }
   }
 }
 </script>
@@ -93,7 +125,7 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+
   color: #2c3e50;
   margin: 60px auto;
   max-width: 50%;
@@ -120,5 +152,14 @@ li {
 
 a {
   color: #42b983;
+}
+
+#title {
+  text-align: center;
+}
+
+.quantity {
+  width: 40px;
+  height: 40px;
 }
 </style>
