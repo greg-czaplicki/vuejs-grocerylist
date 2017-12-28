@@ -38,26 +38,20 @@
 
       <div class="field">
       <div class="control">
-        <input type="submit" value="Add Item" class="button is-link">
+        <input v-if="item.name" type="submit" value="Add Item" class="button is-link">
       </div>
     </div>
   </form>
 
-<div id="list">
-  <h1 v-if="sorted_produce.length > 0">Produce</h1>
-    <ul v-for="item in sorted_produce">
-      <li>{{ item.name }} <span v-if="item.quantity > 1"> - {{ item.quantity }}</span>
-        <span v-on:click="deleteItem(item)"><i class="fas fa-minus-circle"></i></span>
-      </li>
-    </ul>
-</div>
-
+    <Item v-if="sorted_produce" :toggleCompleted="toggleCompleted" :items="sorted_produce"></Item>
+    <!-- <Item v-if="sorted_dairy" v-bind:items="sorted_dairy"></Item>  -->
 
 </div>
 </template>
 
 <script>
 import Firebase from 'firebase'
+import Item from './components/Item'
 
 const config = {
   apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
@@ -67,15 +61,18 @@ const config = {
   storageBucket: 'vuejsgrocery.appspot.com',
   messagingSenderId: '986128402964'
 }
-
 const app = Firebase.initializeApp(config)
 const db = app.database()
-
 const itemsRef = db.ref('items')
+const produceRef = db.ref('produce')
 
 export default {
+  components: {
+    Item: Item
+  },
   firebase: {
-    items: itemsRef
+    items: itemsRef,
+    produce: produceRef
   },
   data () {
     return {
@@ -96,10 +93,12 @@ export default {
         'Frozen Foods',
         'Miscellaneous'
       ],
+      myName: 'Greg',
       item: {
         quantity: 1,
         name: '',
-        category: 'Produce'
+        category: 'Produce',
+        isCompleted: false
       }
     }
   },
@@ -111,23 +110,25 @@ export default {
       this.item.quantity -= 1
     },
     addItem: function () {
-      itemsRef.push(this.item)
+      if (this.item.category === 'Produce') {
+        produceRef.push(this.item)
+      } else {
+        itemsRef.push(this.item)
+      }
       this.item.name = ''
       this.item.category = 'Produce'
       this.item.quantity = 1
     },
-    deleteItem: function (item) {
-      itemsRef.child(item['.key']).remove()
+    toggleCompleted: function (item, isCompleted) {
+      produceRef.child(item['.key']).child('isCompleted').set(!isCompleted)
     }
   },
   computed: {
-    sorted_produce () {
-      const result = this.items.filter(item => item.category === 'Produce')
-      return result.sort((a, b) => a.name > b.name)
+    sorted_produce: function () {
+      return this.produce.sort((a, b) => a.name > b.name)
     },
-    sorted_deli () {
-      const result = this.items.filter(item => item.category === 'Deli')
-      return result.sort((a, b) => a.name > b.name)
+    sorted_dairy: function () {
+      return this.items.sort((a, b) => a.name > b.name)
     }
   }
 }
@@ -175,9 +176,4 @@ a {
   width: 40px;
   height: 40px;
 }
-
-.fa-minus-circle {
-  cursor: pointer;
-}
-
 </style>
