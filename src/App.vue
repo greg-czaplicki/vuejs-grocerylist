@@ -1,21 +1,35 @@
 <template>
   <div id="app">
 
+    <!-- Title -->
     <h1 id="title">Grocery List</h1>
 
+    <!-- Form -->
     <form v-on:submit.prevent="addItem(item)">
       <ItemName v-bind:item="item"></ItemName>
       <ItemCategory v-bind:categories="categories" v-bind:item="item"></ItemCategory>
       <ItemQuantity v-bind:item="item"></ItemQuantity>
     </form>
 
-    <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems('Produce')"></GroceryList>
-    <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems('Deli')"></GroceryList>
+    <!-- Grocery List -->
+    <div v-for="category in categories">
+      <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems(category)"></GroceryList>
+    </div>
+    <!-- Completed List -->
+  <hr>
+  <h2 id="completedTitle">Completed <i class="fa fa-shopping-cart" aria-hidden="true"></i></h2>
+    <div>
+      <ul v-for="item in filterCompleted">
+        <li v-on:click="toggleCompleted(item, item.isCompleted)" :class="{completed: item.isCompleted}">{{ item.name }}</li>
+      </ul>
+    </div>
 
   </div>
 </template>
 
 <script>
+// ---------------
+// FirebaseConfig
 import Firebase from 'firebase'
 import GroceryList from './components/GroceryList'
 import ItemName from './components/ItemName'
@@ -34,7 +48,7 @@ const app = Firebase.initializeApp(config)
 const db = app.database()
 
 const itemsRef = db.ref('items')
-
+// ---------------------------
 export default {
   components: {
     GroceryList: GroceryList,
@@ -80,13 +94,21 @@ export default {
       this.item.quantity = 1
     },
     filterItems: function (cat) {
-      return this.items.filter(item => item.category === cat)
+      return this.items
+        .filter(item => item.category === cat)
+        .sort((a, b) => a.name > b.name)
+        .filter(item => item.isCompleted === false)
     },
     toggleCompleted: function (item, isCompleted) {
       itemsRef
         .child(item['.key'])
         .child('isCompleted')
         .set(!isCompleted)
+    }
+  },
+  computed: {
+    filterCompleted: function () {
+      return this.items.filter(item => item.isCompleted === true)
     }
   }
 }
@@ -100,7 +122,7 @@ export default {
 
   color: #2c3e50;
   margin: 60px auto;
-  max-width: 50%;
+  max-width: 90%;
 }
 
 h1,
@@ -130,8 +152,18 @@ a {
   text-align: center;
 }
 
-.quantity {
-  width: 40px;
-  height: 40px;
+#completedTitle {
+  font-size: 30px;
+  color: rgb(182, 182, 182);
+  font-style: italic;
+}
+
+/* Desktops and laptops ----------- */
+@media only screen and (min-width: 1224px) {
+  /* Styles */
+  #app {
+    margin: 60px auto;
+    max-width: 40%;
+  }
 }
 </style>

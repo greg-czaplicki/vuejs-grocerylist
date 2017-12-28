@@ -1,8 +1,8 @@
 <template>
   <div class="field">
-    <label class="label">Category:</label>
+    <label class="label is-medium">Category:</label>
     <div class="control">
-      <div class="select">
+      <div class="select is-medium">
         <select v-model="item.category">
           <option v-for="category in categories">{{ category }}</option>
         </select>
@@ -21,5 +21,11 @@ export default {
 </script>
 
 <style lang="scss">
+.select {
+  width: 100%;
+}
 
+select {
+  width: 100%;
+}
 </style>

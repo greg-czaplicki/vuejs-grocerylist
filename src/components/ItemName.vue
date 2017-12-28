@@ -1,8 +1,8 @@
 <template>
   <div class="field">
-    <label class="label">Item Name:</label>
+    <label class="label is-medium">Item Name:</label>
       <div class="control">
-        <input v-model="item.name" class="input" type="text" placeholder="Parsley">
+        <input v-model="item.name" class="input is-medium" type="text" placeholder="Parsley">
       </div>
     </div>
 </template>
