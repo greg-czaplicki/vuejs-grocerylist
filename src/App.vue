@@ -1,57 +1,26 @@
 <template>
   <div id="app">
+
     <h1 id="title">Grocery List</h1>
 
-    <form v-on:submit.prevent="addItem">
-      <div class="field">
-        <label class="label">Item Name:</label>
-        <div class="control">
-          <input v-model="item.name" class="input" type="text" placeholder="Parsley">
-        </div>
-      </div>
+    <form v-on:submit.prevent="addItem(item)">
+      <ItemName v-bind:item="item"></ItemName>
+      <ItemCategory v-bind:categories="categories" v-bind:item="item"></ItemCategory>
+      <ItemQuantity v-bind:item="item"></ItemQuantity>
+    </form>
 
-      <div class="field">
-        <label class="label">Category:</label>
-        <div class="control">
-          <div class="select">
-            <select v-model="item.category">
-              <option v-for="category in categories">{{ category }}</option>
-            </select>
-          </div>
-        </div>
-      </div>
+    <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems('Produce')"></GroceryList>
+    <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems('Deli')"></GroceryList>
 
-      <div class="field">
-        <label class="label">Quantity</label>
-        <div class="field is-grouped">
-          <div class="control">
-            <h2>{{ item.quantity }}</h2>
-          </div>
-          <div class="control">
-            <button v-on:click.prevent="increaseQuantity" class="button is-primary quantity">+</button>
-            </div>
-          <div class="control">
-            <button v-on:click.prevent="decreaseQuantity" v-if="item.quantity > 1" class="button is-danger quantity">-</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-      <div class="control">
-        <input v-if="item.name" type="submit" value="Add Item" class="button is-link">
-      </div>
-    </div>
-  </form>
-
-    <Item v-if="sorted_produce" :toggleCompleted="toggleCompleted" :items="sorted_produce"></Item>
-    <!-- <Item v-if="sorted_dairy" v-bind:items="sorted_dairy"></Item>  -->
-
-</div>
+  </div>
 </template>
 
 <script>
 import Firebase from 'firebase'
-import Item from './components/Item'
+import GroceryList from './components/GroceryList'
+import ItemName from './components/ItemName'
+import ItemCategory from './components/ItemCategory'
+import ItemQuantity from './components/ItemQuantity'
 
 const config = {
   apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
@@ -63,16 +32,18 @@ const config = {
 }
 const app = Firebase.initializeApp(config)
 const db = app.database()
+
 const itemsRef = db.ref('items')
-const produceRef = db.ref('produce')
 
 export default {
   components: {
-    Item: Item
+    GroceryList: GroceryList,
+    ItemName: ItemName,
+    ItemCategory: ItemCategory,
+    ItemQuantity: ItemQuantity
   },
   firebase: {
-    items: itemsRef,
-    produce: produceRef
+    items: itemsRef
   },
   data () {
     return {
@@ -93,7 +64,6 @@ export default {
         'Frozen Foods',
         'Miscellaneous'
       ],
-      myName: 'Greg',
       item: {
         quantity: 1,
         name: '',
@@ -103,32 +73,20 @@ export default {
     }
   },
   methods: {
-    increaseQuantity: function () {
-      this.item.quantity += 1
-    },
-    decreaseQuantity: function () {
-      this.item.quantity -= 1
-    },
     addItem: function () {
-      if (this.item.category === 'Produce') {
-        produceRef.push(this.item)
-      } else {
-        itemsRef.push(this.item)
-      }
+      itemsRef.push(this.item)
       this.item.name = ''
       this.item.category = 'Produce'
       this.item.quantity = 1
     },
-    toggleCompleted: function (item, isCompleted) {
-      produceRef.child(item['.key']).child('isCompleted').set(!isCompleted)
-    }
-  },
-  computed: {
-    sorted_produce: function () {
-      return this.produce.sort((a, b) => a.name > b.name)
+    filterItems: function (cat) {
+      return this.items.filter(item => item.category === cat)
     },
-    sorted_dairy: function () {
-      return this.items.sort((a, b) => a.name > b.name)
+    toggleCompleted: function (item, isCompleted) {
+      itemsRef
+        .child(item['.key'])
+        .child('isCompleted')
+        .set(!isCompleted)
     }
   }
 }
