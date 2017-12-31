@@ -20,10 +20,10 @@
   <hr>
   <h2 id="completedTitle">Completed <i class="fa fa-shopping-cart" aria-hidden="true"></i></h2>
     <div v-for="category in categories">
-      <GroceryList :toggleCompleted="toggleCompleted" :items="filterCompleted(category)"></GroceryList>
+      <CompletedGroceryList :toggleCompleted="toggleCompleted" :items="filterCompleted(category)"></CompletedGroceryList>
     </div>
 
-    <button v-on:click="clearDb" v-if="items.length > 0" class="button is-warning">Clear</button>
+    <button v-on:click="clearDb" v-if="items.length > 0" class="button is-warning">Clear List?</button>
 
   </div>
 </template>
@@ -36,6 +36,7 @@ import GroceryList from './components/GroceryList'
 import ItemName from './components/ItemName'
 import ItemCategory from './components/ItemCategory'
 import ItemQuantity from './components/ItemQuantity'
+import CompletedGroceryList from './components/CompletedGroceryList'
 
 const config = {
   apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
@@ -55,7 +56,8 @@ export default {
     GroceryList: GroceryList,
     ItemName: ItemName,
     ItemCategory: ItemCategory,
-    ItemQuantity: ItemQuantity
+    ItemQuantity: ItemQuantity,
+    CompletedGroceryList: CompletedGroceryList
   },
   firebase: {
     items: itemsRef
@@ -84,8 +86,7 @@ export default {
         name: '',
         category: 'Produce',
         isCompleted: false
-      },
-      completeHeader: false
+      }
     }
   },
   methods: {
