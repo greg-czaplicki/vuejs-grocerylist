@@ -5,7 +5,7 @@
     <h1 id="title">Grocery List</h1>
 
     <!-- Form -->
-    <form v-on:submit.prevent="addItem(item)">
+    <form v-on:submit.prevent="addItem">
       <ItemName v-bind:item="item"></ItemName>
       <ItemCategory v-bind:categories="categories" v-bind:item="item"></ItemCategory>
       <ItemQuantity v-bind:item="item"></ItemQuantity>
@@ -15,14 +15,15 @@
     <div v-for="category in categories">
       <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems(category)"></GroceryList>
     </div>
+
     <!-- Completed List -->
   <hr>
   <h2 id="completedTitle">Completed <i class="fa fa-shopping-cart" aria-hidden="true"></i></h2>
-    <div>
-      <ul v-for="item in filterCompleted">
-        <li v-on:click="toggleCompleted(item, item.isCompleted)" :class="{completed: item.isCompleted}">{{ item.name }}</li>
-      </ul>
+    <div v-for="category in categories">
+      <GroceryList :toggleCompleted="toggleCompleted" :items="filterCompleted(category)"></GroceryList>
     </div>
+
+    <button v-on:click="clearDb" v-if="items.length > 0" class="button is-warning">Clear</button>
 
   </div>
 </template>
@@ -83,7 +84,8 @@ export default {
         name: '',
         category: 'Produce',
         isCompleted: false
-      }
+      },
+      completeHeader: false
     }
   },
   methods: {
@@ -104,11 +106,20 @@ export default {
         .child(item['.key'])
         .child('isCompleted')
         .set(!isCompleted)
-    }
-  },
-  computed: {
-    filterCompleted: function () {
-      return this.items.filter(item => item.isCompleted === true)
+    },
+    filterCompleted: function (cat) {
+      return this.items
+        .filter(item => item.category === cat)
+        .sort((a, b) => a.name > b.name)
+        .filter(item => item.isCompleted === true)
+    },
+    clearDb: function () {
+      const answer = window.prompt('Enter the passcode to clear the grocery list.')
+      if (answer === '1029') {
+        itemsRef.remove()
+      } else {
+        alert('You entered the wrong passcode!')
+      }
     }
   }
 }
@@ -156,6 +167,18 @@ a {
   font-size: 30px;
   color: rgb(182, 182, 182);
   font-style: italic;
+}
+
+button {
+  align-content: center;
+}
+
+.is-warning {
+  margin: 15px 0;
+  width: 100%;
+  height: 45px;
+  font-size: 20px;
+  margin-top: 40px;
 }
 
 /* Desktops and laptops ----------- */
