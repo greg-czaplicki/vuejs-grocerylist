@@ -13,7 +13,10 @@
 
 <script>
 export default {
-  props: ['categories', 'item'],
+  props: {
+    categories: Array,
+    item: Object
+  },
   data () {
     return {}
   }

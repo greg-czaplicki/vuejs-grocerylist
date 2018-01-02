@@ -25,7 +25,9 @@
 
 <script>
 export default {
-  props: ['item'],
+  props: {
+    item: Object
+  },
   data () {
     return {}
   },

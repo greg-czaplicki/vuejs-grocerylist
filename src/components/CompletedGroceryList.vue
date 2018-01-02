@@ -11,7 +11,10 @@
 
 <script>
 export default {
-  props: ['items', 'toggleCompleted'],
+  props: {
+    items: Array,
+    toggleCompleted: Function
+  },
   data () {
     return {}
   }
