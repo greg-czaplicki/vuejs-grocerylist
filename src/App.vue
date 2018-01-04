@@ -3,7 +3,7 @@
 
     <!-- Title -->
     <h1 id="title">Grocery List</h1>
-    <h2 id="date">Today's Date: {{ todaysDate }}</h2>
+    <h2 id="date">Date: {{ todaysDate }}</h2>
 
     <!-- Form -->
     <form v-on:submit.prevent="addItem">
