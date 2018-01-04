@@ -3,6 +3,7 @@
 
     <!-- Title -->
     <h1 id="title">Grocery List</h1>
+    <h2 id="date">Today's Date: {{ todaysDate }}</h2>
 
     <!-- Form -->
     <form v-on:submit.prevent="addItem">
@@ -86,7 +87,8 @@ export default {
         name: '',
         category: 'Produce',
         isCompleted: false
-      }
+      },
+      todaysDate: new Date().toLocaleDateString()
     }
   },
   methods: {
@@ -180,6 +182,11 @@ button {
   height: 45px;
   font-size: 20px;
   margin-top: 40px;
+}
+
+#date {
+  float: right;
+  font-weight: bold;
 }
 
 /* Desktops and laptops ----------- */
