@@ -39,6 +39,7 @@ import ItemCategory from './components/ItemCategory'
 import ItemQuantity from './components/ItemQuantity'
 import CompletedGroceryList from './components/CompletedGroceryList'
 
+// My settings
 const config = {
   apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
   authDomain: 'vuejsgrocery.firebaseapp.com',
@@ -47,10 +48,22 @@ const config = {
   storageBucket: 'vuejsgrocery.appspot.com',
   messagingSenderId: '986128402964'
 }
+
+// Paul Settings
+// const config = {
+//   apiKey: 'AIzaSyAifz-Sm1RBPfnq-xLAeWT5H5XrBuZCW0A',
+//   authDomain: 'paulgrocery-6abfa.firebaseapp.com',
+//   databaseURL: 'https://paulgrocery-6abfa.firebaseio.com/',
+//   projectId: 'paulgrocery-6abfa',
+//   storageBucket: 'paulgrocery-6abfa.appspot.com',
+//   messagingSenderId: '986128402964'
+// }
+
 const app = Firebase.initializeApp(config)
 const db = app.database()
 
 const itemsRef = db.ref('items')
+// const itemList = db.ref('items_database')
 // ---------------------------
 export default {
   components: {
@@ -62,6 +75,7 @@ export default {
   },
   firebase: {
     items: itemsRef
+    // itemList: itemList
   },
   data () {
     return {
@@ -80,7 +94,8 @@ export default {
         'Paper/Plastics',
         'Toiletries',
         'Frozen Foods',
-        'Miscellaneous'
+        'Miscellaneous',
+        'Recipes'
       ],
       item: {
         quantity: 1,
@@ -94,6 +109,7 @@ export default {
   methods: {
     addItem: function () {
       itemsRef.push(this.item)
+      // itemList.push(this.item)
       this.item.name = ''
       this.item.category = 'Produce'
       this.item.quantity = 1
@@ -118,7 +134,7 @@ export default {
     },
     clearDb: function () {
       const answer = window.prompt('Enter the passcode to clear the grocery list.')
-      if (answer === '1029') {
+      if (answer === '1234') {
         itemsRef.remove()
       } else {
         alert('You entered the wrong passcode!')
@@ -135,7 +151,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 
   color: #2c3e50;
-  margin: 60px auto;
+  margin: 10px auto;
   max-width: 90%;
 }
 
