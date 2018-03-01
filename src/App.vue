@@ -13,14 +13,14 @@
     </form>
 
     <!-- Grocery List -->
-    <div v-for="category in categories">
+    <div v-for="category in categories" :key="category+1">
       <GroceryList :toggleCompleted="toggleCompleted" :items="filterItems(category)"></GroceryList>
     </div>
 
     <!-- Completed List -->
   <hr>
   <h2 id="completedTitle">Completed <i class="fa fa-shopping-cart" aria-hidden="true"></i></h2>
-    <div v-for="category in categories">
+    <div v-for="category in categories" :key="category">
       <CompletedGroceryList :toggleCompleted="toggleCompleted" :items="filterCompleted(category)"></CompletedGroceryList>
     </div>
 
@@ -134,7 +134,7 @@ export default {
     },
     clearDb: function () {
       const answer = window.prompt('Enter the passcode to clear the grocery list.')
-      if (answer === '1234') {
+      if (answer === '1029') {
         itemsRef.remove()
       } else {
         alert('You entered the wrong passcode!')

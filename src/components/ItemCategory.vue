@@ -4,7 +4,7 @@
     <div class="control">
       <div class="select is-medium">
         <select v-model="item.category">
-          <option v-for="category in categories">{{ category }}</option>
+          <option v-for="category in categories" :key="category">{{ category }}</option>
         </select>
       </div>
     </div>
